@@ -1,0 +1,135 @@
+// Source of truth for interface translations. Run with --rewrite once to replace old literals.
+const fs=require('node:fs'),path=require('node:path');const root=path.join(__dirname,'..');
+const strings={
+app_name:['Пауза','Pause'],service_name:['Пауза — перерывы на задачи','Pause — learning breaks'],
+schedule_from:['С %1$s','From %1$s'],schedule_to:['До %1$s','Until %1$s'],
+paused:['Перерывы выключены. Настройки сохранены.','Breaks are off. Your settings are saved.'],
+pick_first:['Осталось выбрать приложения — всё остальное уже настроено.','Choose your apps — everything else is ready.'],
+connect_first:['Настройки готовы. Для перерывов нужно подключить службу ниже.','Your settings are ready. Connect the service below to enable breaks.'],
+outside_schedule:['Сейчас вне выбранного расписания.','Outside your scheduled hours.'],
+ready_summary:['Всё готово. Открывай выбранное приложение — таймер начнёт считать время.','All set. Open a selected app and the timer will start.'],
+access_ready:['✓  Доступ настроен','✓  Access is ready'],
+access_ready_body:['Служба работает. Больше ничего разрешать не нужно.','The service is running. No more permissions are needed.'],
+try_break:['Пробный перерыв','Try a break'],
+access_waiting:['Доступ включён, служба не подключена','Access is enabled; the service is not connected'],
+access_waiting_body:['Если этот статус не меняется, выключи и снова включи только службу «Пауза — перерывы на задачи» в специальных возможностях.','If this status does not change, turn only the Pause — learning breaks accessibility service off and back on.'],
+open_service:['Открыть настройки службы','Open service settings'],
+access_off:['Один шаг: включить доступ','One step: enable access'],
+access_off_body:['Он нужен, чтобы вовремя прервать выбранное приложение.','This lets Pause interrupt your selected app at the right time.'],
+enable_access:['Включить доступ','Enable access'],brand:['П А У З А','P A U S E'],
+headline:['Выйти из ленты.\nВключить голову.','Leave the feed.\nWake up your mind.'],
+tagline:['Маленькие задачи между большими порциями контента.','A little learning between stretches of scrolling.'],
+smart_breaks:['Умные перерывы','Learning breaks'],today:['сегодня','today'],
+statistics:['%1$d решено · %2$d разобрано\n%3$d пропущено','%1$d solved · %2$d reviewed\n%3$d skipped'],
+where:['Где делать паузу','Where to pause'],rhythm:['Для каждого приложения — свой ритм.','Set a different rhythm for each app.'],
+empty_title:['Здесь пока тихо','Nothing here yet'],empty_body:['Добавь TikTok, Shorts, Instagram или другое приложение, в котором теряется время.','Add TikTok, Shorts, Instagram, or any app that takes up your time.'],
+unlimited:['без лимита','unlimited'],per_day:['%1$d в день','%1$d per day'],
+app_rule:['Раз в %1$d мин · задач за перерыв: %2$d\nПропуски: %3$s','Every %1$d min · questions per break: %2$d\nSkips: %3$s'],
+pending_question:['Задача ждёт решения','A question is waiting'],next_break:['До паузы ≈ %1$d мин активного просмотра','Next break in about %1$d min of active use'],
+configure:['Настроить','Configure'],pick_apps:['+  Выбрать приложения','+  Choose apps'],
+subjects_title:['Чему учиться','What to learn'],subjects_settings:['Предметы и сложность','Subjects and difficulty'],
+try_question:['Попробовать задачу','Try a question'],advanced:['Дополнительные настройки','More settings'],
+schedule:['Расписание и дни недели','Schedule and weekdays'],system_access:['Системные настройки доступа','System access settings'],
+how_it_works:['Как это работает','How it works'],footer:['Без аккаунта. Без сети. В твоём темпе.\nПауза %1$s','No account. No internet. At your pace.\nPause %1$s'],
+allow_breaks:['Разрешить умные перерывы','Enable learning breaks'],not_now:['Не сейчас','Not now'],open_settings:['Открыть настройки','Open settings'],
+access_help:['Открой настройки телефона → Специальные возможности → Пауза','Open phone settings → Accessibility → Pause'],
+search_apps:['Найти приложение','Find an app'],your_apps:['Твои приложения','Your apps'],cancel:['Отмена','Cancel'],save:['Сохранить','Save'],
+interval:['Перерыв каждые','Take a break every'],minute_1:['1 минуту','1 minute'],minute_3:['3 минуты','3 minutes'],minute_5:['5 минут','5 minutes'],minute_10:['10 минут','10 minutes'],minute_15:['15 минут','15 minutes'],minute_20:['20 минут','20 minutes'],minute_30:['30 минут','30 minutes'],minute_45:['45 минут','45 minutes'],minute_60:['60 минут','60 minutes'],
+subject_setting_help:['Предметы, их сложность и способ ответа выбираются на главном экране в разделе «Чему учиться».','Choose subjects, difficulty and answer modes under What to learn on the main screen.'],
+questions_per_break:['Задач за перерыв','Questions per break'],question_1:['1 задача','1 question'],question_2:['2 задачи','2 questions'],question_3:['3 задачи','3 questions'],
+skip_limit:['Пропуски за день для этого приложения','Daily skips for this app'],no_skips:['Без пропусков','No skips'],skip_1:['1 пропуск','1 skip'],skip_3:['3 пропуска','3 skips'],skip_5:['5 пропусков','5 skips'],no_limit:['Без ограничения','Unlimited'],
+skip_delay:['Когда можно пропустить','When skipping becomes available'],immediately:['Сразу','Immediately'],seconds_10:['Через 10 секунд','After 10 seconds'],seconds_30:['Через 30 секунд','After 30 seconds'],after_minute:['Через минуту','After a minute'],
+rule_help:['Время копится между открытиями. Сохранение настроек начнёт новый интервал. Дневной лимит пропусков не сбрасывается.','Time adds up between visits. Saving starts a new interval. Your daily skip count does not reset.'],
+selected_hours:['Только в выбранные часы','Only during selected hours'],monday:['Понедельник','Monday'],tuesday:['Вторник','Tuesday'],wednesday:['Среда','Wednesday'],thursday:['Четверг','Thursday'],friday:['Пятница','Friday'],saturday:['Суббота','Saturday'],sunday:['Воскресенье','Sunday'],
+schedule_help:['Одинаковое время начала и конца — весь день. Ночной интервал относится к дню его начала.','Matching start and end times mean all day. An overnight interval belongs to the day it starts.'],
+schedule_title:['Когда делать паузы','When to pause'],pick_day:['Выбери хотя бы один день','Choose at least one day'],
+help_title:['Твоя короткая пауза','Your learning break'],app_info:['Сведения о приложении','App info'],understood:['Понятно','Got it'],
+subjects_intro:['Выбирай предметы, а для каждого — свой уровень и способ ответа. Объяснения писать не нужно.','Choose subjects and set difficulty and answer mode for each one. No written explanations are needed.'],
+subjects_autosave:['Настройки сохраняются сразу. Уровень и способ ответа применятся к новым задачам; выключенный предмет больше не появится.','Changes are saved immediately. Difficulty and answer mode apply to new questions; disabled subjects stop appearing.'],
+easy_preset:['Готовый лёгкий набор','Easy starter set'],preset_applied:['Все предметы включены: базовый уровень','All subjects enabled at basic difficulty'],
+difficulty:['Сложность','Difficulty'],basic:['Базовый','Basic'],medium:['Средний','Intermediate'],hard:['Сложный','Advanced'],
+answer_mode:['Способ ответа','Answer mode'],mixed:['Смешанный','Mixed'],type_answer:['Ввод вручную','Type an answer'],choices:['Варианты ответа','Multiple choice'],
+keep_subject:['Оставь хотя бы один предмет','Keep at least one subject'],try_subjects:['Попробовать выбранные предметы','Try selected subjects'],done:['Готово','Done'],
+subject_math:['Математика','Math'],subject_russian:['Русский язык','Russian'],subject_english:['Английский','English'],subject_history:['История','History'],subject_geography:['География','Geography'],
+bank_size:['Заданий по уровням: %1$d / %2$d / %3$d.','Questions by level: %1$d / %2$d / %3$d.'],
+math_description:['Арифметика, проценты, закономерности и уравнения. Числа генерируются заново.','Arithmetic, percentages, sequences and equations. New numbers are generated each time.'],
+russian_description:['Правописание: восстанови слово целиком. Орфография проверяется по условию.','Russian spelling: restore the whole word. The prompt tells you what to check.'],
+english_description:['Лексика, глаголы, множественное число, степени сравнения и грамматика. Ответ — слово или короткий фрагмент.','Vocabulary, verbs, plurals, comparison and grammar. Answer with a word or short phrase.'],
+history_description:['Исторические даты, люди и понятия. Ответ — год, имя или термин.','Historical dates, people and concepts. Answer with a year, name or term.'],
+geography_description:['Столицы, реки, горы, океаны, климат и географические понятия. Регистр и ё/е не важны.','Capitals, rivers, mountains, oceans, climate and geography. Capitalization does not matter.'],
+appearance:['Язык и тема','Language and theme'],language:['Язык приложения','App language'],theme:['Оформление','Theme'],system:['Как в системе','System default'],light:['Светлая','Light'],dark:['Тёмная','Dark'],
+appearance_note:['Язык меняет интерфейс, задания и объяснения. В упражнениях по русскому проверяемые слова остаются русскими.','Language changes the interface, questions and explanations. Russian spelling exercises still use Russian words.'],
+demo_banner:['П А У З А   /   П Р О Б А','P A U S E   /   P R E V I E W'],break_banner:['П А У З А   /   В Р Е М Я   П О Д У М А Т Ь','P A U S E   /   T I M E   T O   T H I N K'],
+feed_can_wait:['Лента подождёт.','The feed can wait.'],demo_intro:['Так будет выглядеть твой короткий перерыв.','This is what your learning break will look like.'],break_intro:['Реши задачу или разбери ответ, чтобы вернуться к «%1$s».','Solve the question or review its answer to return to %1$s.'],fallback_app:['приложению','the app'],
+question_number:['Задача %1$d из %2$d','Question %1$d of %2$d'],number_answer:['Твой ответ — число','Your answer — a number'],short_answer:['Твой короткий ответ','Your short answer'],no_rush:['Не торопись. Здесь нет таймера на ответ.','Take your time. There is no answer deadline.'],
+check:['Проверить ответ','Check answer'],hint:['Небольшая подсказка','Show a hint'],reveal:['Показать ответ','Show the answer'],
+skip:['Пропустить','Skip'],close_demo:['Закрыть пробу','Close preview'],stop_viewing:['Закончить просмотр','Stop scrolling'],demo_note:['Проба не расходует лимит и не меняет статистику.','The preview does not use skips or change your statistics.'],leave_note:['Можно уйти на главный экран. Задача сохранится до следующего открытия приложения.','You can go to your home screen. The question will wait until you reopen the app.'],
+skip_demo:['Пропустить пробную задачу','Skip preview question'],skips_used:['Пропуски закончились на сегодня','No skips left today'],skip_wait:['Пропуск через %1$d с','Skip in %1$d s'],skip_remaining:['Пропустить · осталось %1$d','Skip · %1$d left'],
+empty_answer:['Введи короткий ответ — и проверим.','Enter a short answer to check it.'],wrong_answer:['Пока не сходится. Попробуй ещё раз, открой подсказку или посмотри ответ.','Not quite. Try again, use a hint, or reveal the answer.'],
+great:['ОТЛИЧНО','WELL DONE'],success_title:['Голова включилась.','Mind switched on.'],complete_note:['Можно вернуться к просмотру. Или оставить немного времени себе.','You can keep watching. Or keep a little time for yourself.'],next_note:['Ещё один короткий шаг — и можно продолжать.','One more short step before you continue.'],
+continue_viewing:['Продолжить просмотр','Continue watching'],next_question:['Следующая задача','Next question'],
+review_banner:['РАЗБОР ОТВЕТА','ANSWER REVIEW'],review_title:['Теперь понятно.','Let’s work it out.'],correct_answer:['Правильный ответ','Correct answer'],
+};
+strings.service_description=['Пауза определяет приложение на переднем плане и открывает короткое учебное задание после заданного времени. Доступ к окнам нужен, чтобы учитывать только открытое приложение. Текст, сообщения и нажатия не сохраняются. Данные остаются на телефоне; доступа к интернету нет. Службу можно отключить здесь в любой момент.','Pause detects the foreground app and opens a short learning exercise after your chosen interval. Window access is used only to identify the active app. Text, messages and taps are not saved. Data stays on your phone; the app has no internet access. You can disable the service here at any time.'];
+strings.permission_body=['Пауза использует специальные возможности, чтобы определить приложение на переднем плане и открыть задачу в нужный момент.\n\nAndroid предоставляет этой службе доступ к содержимому окон. Наш код берёт только имя приложения, не читает текст, не записывает экран и не нажимает кнопки в других приложениях.\n\nДанные не отправляются в сеть. Доступ можно отозвать в любой момент.\n\nНа следующем экране найди «Пауза — перерывы на задачи» (обычно в разделе «Установленные приложения») и включи службу.','Pause uses Accessibility to detect the foreground app and show a question at the right time.\n\nAndroid gives this service access to window content. Our code reads only the app package name. It does not read text, record the screen, or tap buttons in other apps.\n\nNo data is sent over the internet. You can revoke access at any time.\n\nOn the next screen, find Pause — learning breaks (usually under Installed apps) and enable the service.'];
+strings.help_body=['1. Выбери приложения и интервал.\n2. Включи службу в специальных возможностях.\n3. Открой выбранное приложение и пользуйся как обычно.\n\nУчитывается время на переднем плане при включённом и разблокированном экране. Пауза не определяет направление взгляда и не различает ленту, сообщения или другие разделы одного приложения.\n\nПосле интервала открывается задача. Реши её, разбери правильный ответ или используй пропуск. Разбор не тратит пропуск. Можно уйти на главный экран — при возврате задача останется.\n\nНа Samsung: если Android запрещает включить службу, открой сведения о «Паузе» → меню ⋮ → «Разрешить ограниченные настройки», если пункт доступен. Затем снова включи службу.\n\nЕсли служба отключается, проверь ограничения батареи и список спящих приложений. После принудительной остановки снова открой приложение и проверь службу.\n\nЭто добровольный помощник: его можно отключить или удалить. Жёсткого таймера ответа нет.','1. Choose apps and an interval.\n2. Enable the Accessibility service.\n3. Open a selected app and use it normally.\n\nOnly foreground time with the screen on and unlocked is counted. Pause does not track your gaze or distinguish feeds, messages and other sections of the same app.\n\nWhen time is up, solve the question, review its answer, or use a skip. Reviewing an answer does not use a skip. You may go home; the question will wait when you return.\n\nOn Samsung, if Android blocks the service, open Pause app info → ⋮ → Allow restricted settings, if available. Then enable the service again.\n\nIf the service stops, check battery restrictions and sleeping apps. After force-stopping Pause, reopen it and check the service.\n\nThis is a voluntary tool: you can disable or uninstall it. There is no answer deadline.'];
+// A revealed answer never completes a question. Keep this copy explicit in both languages.
+Object.assign(strings, {
+ review_setting:['После показа ответа','After revealing an answer'],
+ review_setting_new:['Новое задание','New question'],review_setting_skip:['Пропуск из лимита','Use a skip'],review_setting_ask:['Выбирать каждый раз','Choose each time'],
+ review_setting_help:['Просмотр ответа не засчитывается как решение. Новая задача сохраняет текущий шаг перерыва. Пропуск завершает перерыв и расходует лимит этого приложения; ожидание перед пропуском тоже действует. Если пропуск недоступен, можно решить новую задачу.','Revealing an answer does not count as solving it. A new question keeps the same break step. Skipping ends the break and uses this app’s allowance; the skip delay still applies. If skipping is unavailable, you can solve a new question.'],
+ reveal_note:['После просмотра ответа — новая задача или пропуск из лимита. Подсмотренный ответ не засчитывается.','After revealing: a new question or a skip from your allowance. An exposed answer cannot count as solved.'],
+ review_note_new:['Ответ просмотрен, но задача не решена. Теперь — другое задание на том же шаге перерыва.','You have seen the answer, but the question is not solved. Try a different question at the same break step.'],
+ review_note_skip:['Чтобы вернуться к просмотру, используй пропуск из лимита. Если не хочешь тратить его или пропуски закончились, реши новую задачу.','Use a skip from your allowance to return to watching. If you want to save it or have none left, solve a new question.'],
+ review_note_ask:['Выбери: решить другую задачу на том же шаге или потратить пропуск и закончить этот перерыв.','Choose: solve a different question at the same step, or use a skip to end this break.'],
+ review_demo_note:['В настоящем перерыве просмотр ответа требует новой задачи или пропуска из лимита. Здесь можно попробовать другую задачу или закрыть пробу.','In a real break, revealing requires a new question or a skip from your allowance. Here you can try another question or close the preview.'],
+ review_new_question:['Решить новую задачу','Solve a new question'],review_skip:['Использовать пропуск','Use a skip'],review_skip_remaining:['Потратить пропуск · осталось %1$d','Use a skip · %1$d left'],
+ break_intro:['Реши задачу, чтобы вернуться к «%1$s».','Solve the question to return to %1$s.']
+});
+strings.help_body[0]=strings.help_body[0].replace('Реши её, разбери правильный ответ или используй пропуск. Разбор не тратит пропуск.','Реши её или используй пропуск. После просмотра правильного ответа нужно решить другую задачу или потратить пропуск. Поведение выбирается в настройках предметов; лимит и ожидание перед пропуском сохраняются.');
+strings.help_body[1]=strings.help_body[1].replace('solve the question, review its answer, or use a skip. Reviewing an answer does not use a skip.','solve the question or use a skip. After revealing the answer, solve a different question or use a skip. Choose this behavior in subject settings; the skip allowance and delay still apply.');
+Object.assign(strings,{
+ break_music:['Музыка во время задач','Music during questions'],
+ music_unchanged:['Не вмешиваться (по умолчанию)','Leave playback unchanged (default)'],
+ music_pause:['Приостанавливать плееры','Pause players'],
+ music_note:['Без вмешательства музыку контролируют сами плееры: она может возобновиться, когда ленту закроет задача.\n\nВ режиме приостановки «Пауза» просит плееры остановиться при открытии задачи. Автоматического запуска музыки после задачи нет — для её продолжения может понадобиться нажать Play. Реакция зависит от плеера. Звонки и громкость не меняются.','With playback unchanged, players control the music themselves: it may resume when a question covers the feed.\n\nPause players asks players to stop when a question opens. Music is not automatically restarted afterwards; you may need to press Play. Behavior depends on the player. Calls and volume settings are unchanged.'],
+ next_break_seconds:['До паузы: %1$d с активного просмотра','Next break in %1$d s of active use']
+});
+Object.assign(strings,{
+ subject_memory:['Память','Memory'],
+ memory_description:['Запомни ряд из 4, 6 или 8 цифр. Скрой его, когда будешь готов вспомнить порядок.','Memorize a sequence of 4, 6, or 8 digits. Hide it when you are ready to recall the order.'],
+ remember_digits:['Запомни порядок цифр','Remember the order of the digits'],
+ ready_recall:['Скрыть цифры и ответить','Hide digits and answer'],
+ study_stats:['Статистика','Statistics'],
+ view_total:['Время просмотра за всё время','Total viewing time'],
+ tracking_since:['Учитывается время в выбранных приложениях, пока помощник включён. Отсчёт начинается с появления этой функции.','Tracking starts with this feature and counts time in selected apps while the helper is enabled.'],
+ all_study_days:['За все дни','All days'],
+ choose_day:['Выбрать день','Choose a day'],
+ empty_study_day:['За этот период ещё нет ответов.','No answers recorded for this period yet.'],
+ study_counts:['Решено: %1$d · Разобрано: %2$d\nПропущено: %3$d · Ошибок: %4$d','Solved: %1$d · Reviewed: %2$d\nSkipped: %3$d · Wrong answers: %4$d'],
+ avg_time:['В среднем на решение: %1$s','Average time to solve: %1$s'],
+ less_second:['< 1 с','< 1 s'],
+ duration_s:['%1$d с','%1$d s'],
+ duration_ms:['%1$d мин %2$d с','%1$d min %2$d s'],
+ duration_hm:['%1$d ч %2$d мин','%1$d h %2$d min'],
+ daily_goal:['Учебная цель на день','Daily learning goal'],
+ goal_count:['Сколько задач решить за день','Questions to solve per day'],
+ goal_help:['После цели задачи отключаются до полуночи. Учитываются самостоятельные решения во всех приложениях. Лимит просмотра продолжает действовать.','Reaching your goal pauses questions until midnight. Independent solves in all selected apps count. Viewing limits still apply.'],
+ goal_progress:['Цель на сегодня: %1$d из %2$d','Daily goal: %1$d of %2$d'],
+ goal_complete:['Цель на сегодня выполнена. Следующие задачи — завтра.','Daily goal reached. Questions resume tomorrow.'],
+ setting_off:['Выключено (0)','Off (0)'],
+ setting_range:['Введи число от 0 до %1$d','Enter a number from 0 to %1$d'],
+ daily_limit:['Дневной лимит просмотра, минут','Daily viewing limit in minutes'],
+ limit_help:['При достижении лимита просмотр закрывается до полуночи, даже вне расписания задач. Ноль отключает лимит.','When the limit is reached, viewing stops until midnight, including outside the question schedule. Set to zero to turn it off.'],
+ limit_progress:['Сегодня: %1$s из %2$d мин','Today: %1$s of %2$d min'],
+ limit_title:['На сегодня хватит','Daily limit reached'],
+ limit_message:['Сегодня в «%1$s» уже набралось %2$d мин. Можно вернуться завтра или изменить лимит в настройках «Паузы».','You have reached your %2$d min limit for %1$s today. Come back tomorrow or change the limit in Pause settings.'],
+ go_home:['На главный экран','Go to home screen']
+});
+function xml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,'\\n');}
+for(const [folder,index] of [['values',0],['values-en',1]]){const dir=path.join(root,'app/src/main/res',folder);fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'strings.xml'),'<resources>\n'+Object.entries(strings).map(([k,v])=>`    <string name="${k}">${xml(v[index])}</string>`).join('\n')+'\n</resources>\n');}
+if(process.argv.includes('--rewrite')){
+ const mapping=new Map(Object.entries(strings).map(([k,v])=>[v[0],k]));
+ for(const file of ['MainActivity.java','SubjectsActivity.java','BreakActivity.java']){const p=path.join(root,'app/src/main/java/app/mindpause/android',file);let code=fs.readFileSync(p,'utf8');code=code.replace(/"(?:\\.|[^"\\])*"/g,literal=>{try{const key=mapping.get(JSON.parse(literal));return key?'getString(R.string.'+key+')':literal;}catch{return literal;}});fs.writeFileSync(p,code);}
+}
+module.exports=strings;

@@ -1,0 +1,17 @@
+{
+  "total": 1231,
+  "groups": {
+    "russian/0": 105,
+    "russian/1": 105,
+    "russian/2": 121,
+    "english/0": 100,
+    "english/1": 100,
+    "english/2": 100,
+    "history/0": 100,
+    "history/1": 100,
+    "history/2": 100,
+    "geography/0": 100,
+    "geography/1": 100,
+    "geography/2": 100
+  }
+}

@@ -1,0 +1,40 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'app.mindpause.android'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'app.mindpause.android'
+        minSdk 26
+        targetSdk 36
+        versionCode 9
+        versionName '0.5.0'
+        testInstrumentationRunner 'app.mindpause.android.DeviceTests'
+    }
+    buildFeatures { buildConfig true }
+    signingConfigs {
+        localRelease {
+            def keyPath = System.getenv('PAUSE_KEYSTORE')
+            if (keyPath) {
+                storeFile file(keyPath)
+                storePassword System.getenv('PAUSE_STORE_PASSWORD')
+                keyAlias 'pause'
+                keyPassword System.getenv('PAUSE_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            if (System.getenv('PAUSE_KEYSTORE')) signingConfig signingConfigs.localRelease
+            minifyEnabled false
+        }
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    // Both languages must remain available offline, including future bundle installs.
+    bundle { language { enableSplit = false } }
+}
+
+dependencies { testImplementation 'junit:junit:4.13.2' }
+
+// Content changes must invalidate bank validation even if Java classes are unchanged.
+tasks.withType(Test).configureEach { inputs.files(layout.projectDirectory.file('src/main/assets/questions.tsv'),layout.projectDirectory.file('src/main/assets/questions-en.tsv')) }

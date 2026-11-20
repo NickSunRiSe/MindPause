@@ -1,0 +1,18 @@
+.gradle/
+**/build/
+local.properties
+.toolchain/
+.private/
+.idea/
+*.iml
+dist/
+*.jks
+*.keystore
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local reports and captures from the disposable test emulator.
+/docs/images/*.png
+/docs/*-results*.json
+/docs/device-*.txt
+/docs/apk-metadata-*.txt
+/docs/VALIDATION*.md
